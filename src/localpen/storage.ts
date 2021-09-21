@@ -1,6 +1,6 @@
 import { Pen } from './models';
 
-interface Item {
+export interface Item {
   id: string;
   pen: Pen;
   lastModified: number;
@@ -33,6 +33,8 @@ export const createStorage = (name = '__localpen_data__') => {
         lastModified: item.lastModified,
       }))
       .sort((a, b) => b.lastModified - a.lastModified);
+
+  const getAllData = () => getData().items;
 
   const getItem = (itemId: string) => getData().items?.find((item) => itemId === item.id);
 
@@ -84,6 +86,7 @@ export const createStorage = (name = '__localpen_data__') => {
 
   return {
     getList,
+    getAllData,
     getItem,
     addItem,
     updateItem,

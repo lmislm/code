@@ -35,7 +35,7 @@ import {
   templatesScreen,
   openScreen,
 } from './html';
-import { exportPen } from './export';
+import { exportPen, downloadFile } from './export';
 import { createEventsManager } from './events';
 import { starterTemplates } from './templates';
 import { defaultConfig } from './config';
@@ -1489,6 +1489,78 @@ export const app = async (config: Pen) => {
   }
 
   await bootstrap();
+
+  const moveToLiveCodes = (initialLoad = false) => {
+    const div = document.createElement('div');
+    div.innerHTML = `
+<div id="moving-container" class="modal-container">
+  <div class="modal-title">LocalPen is now LiveCodes!</div>
+  <div class="modal-screen-container" style="margin-bottom: 2em; padding: 1em 2em;">
+    <p>
+      LocalPen, now, has a new name (<strong>LiveCodes</strong>), a new domain (<a href="https://livecodes.io" target="_blank">livecodes.io</a>) and a lot more features 🎉✨!
+    </p>
+    <p>
+      Please <a id="export-all-link" href="#">export your saved projects</a>. Then, you can <a href="https://livecodes.io?screen=import" target="_blank">bulk-import them in LiveCodes</a>.
+    </p>
+    <p>
+      Kindly note that <span style="border-bottom: 1px dashed #999">localpen.io</span> will not be available after Dec 20, 2021, so make sure you move to <span style="border-bottom: 1px dashed #999">livecodes.io</span> before that.
+    </p>
+    <p>
+      See you there :)
+    </p>
+    <div class="buttons">
+      <button id="export-all-button" class="wide-button">Export Saved Projects</button>
+      <button id="livecodes-button" class="wide-button">Go to LiveCodes</button>
+    </div>
+  </div>
+</div>
+    `.trim();
+    const container = div.firstChild as HTMLElement;
+    modal.show(container);
+    if (initialLoad) {
+      container.click();
+    }
+
+    const exportLink = document.querySelector('#export-all-link') as HTMLButtonElement;
+    const exportButton = document.querySelector('#export-all-button') as HTMLButtonElement;
+    const livecodesButton = document.querySelector('#livecodes-button') as HTMLButtonElement;
+
+    const exportAll = async (event: Event) => {
+      event.preventDefault();
+      const getDate = () => {
+        let date = new Date();
+        const offset = date.getTimezoneOffset();
+        date = new Date(date.getTime() - offset * 60 * 1000);
+        return date.toISOString().split('T')[0];
+      };
+      const data = storage.getAllData();
+      const filename = 'livecodes_export_' + getDate();
+      const content = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
+      downloadFile(filename, 'json', content);
+    };
+
+    const goToLivecodes = (ev: Event) => {
+      ev.preventDefault();
+      const url = parent.location.href.includes('localpen.io/')
+        ? parent.location.href.replace('localpen.io/', 'livecodes.io/')
+        : 'https://livecodes.io';
+      window.open(url);
+    };
+
+    eventsManager.addEventListener(exportLink, 'click', exportAll, false);
+    eventsManager.addEventListener(exportButton, 'click', exportAll, false);
+    eventsManager.addEventListener(livecodesButton, 'click', goToLivecodes, false);
+  };
+  moveToLiveCodes(true);
+  eventsManager.addEventListener(
+    document.querySelector('#move-to-livecodes-link') as HTMLAnchorElement,
+    'click',
+    (ev) => {
+      ev.preventDefault();
+      moveToLiveCodes();
+    },
+    false,
+  );
 
   return {
     run: async () => {

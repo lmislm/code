@@ -1503,7 +1503,7 @@ export const app = async (config: Pen) => {
       Please <a id="export-all-link" href="#">export your saved projects</a>. Then, you can <a href="https://livecodes.io?screen=import" target="_blank">bulk-import them in LiveCodes</a>.
     </p>
     <p>
-      Kindly note that <span style="border-bottom: 1px dashed #999">localpen.io</span> will not be available after Dec 20, 2021, so make sure you move to <span style="border-bottom: 1px dashed #999">livecodes.io</span> before that.
+      Kindly note that <span style="border-bottom: 1px dashed #999">localpen.io</span> will not be available starting from Dec, 2022; so make sure you move to <span style="border-bottom: 1px dashed #999">livecodes.io</span> before that.
     </p>
     <p>
       See you there :)
